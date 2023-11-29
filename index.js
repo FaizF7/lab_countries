@@ -2,19 +2,19 @@ const getCountryByName = async (countryName) =>{
     const response = await fetch(`https://restcountries.com/v3.1/name/${countryName}`)
     const data = await response.json()
     console.log(data)
-    displayData(data[0])
-    
+    data.forEach((element)=>displayData(element,'#country-details'))
+
 }
 
-const section = document.querySelector('#country-details')
-const displayData = (data)=>{
+const displayData = (data,id)=>{
+    const allCountrySection = document.querySelector(id)
     const div = document.createElement("div")
     const name = document.createElement("p")
     name.innerText = "Name: " + data.name.common
     div.appendChild(name)
 
     const capital = document.createElement("p")
-    capital.innerText = "Capital: " + data.capital[0]
+    capital.innerText = "Capital: " + Object.values(data.capital).join(', ') 
     div.appendChild(capital)
 
     const languages = document.createElement("p")
@@ -25,9 +25,9 @@ const displayData = (data)=>{
     const population = document.createElement("p")
     population.innerText = "Population: " + data.population
     div.appendChild(population)
-    section.appendChild(div)
+    allCountrySection.appendChild(div)
     const hr = document.createElement("hr")
-    section.appendChild(hr)
+    allCountrySection.appendChild(hr)
 }
 
 const getAllCountries = async () =>{
@@ -36,7 +36,7 @@ const getAllCountries = async () =>{
     console.log(data)
     data.forEach(element => {
         try{
-            displayData(element)
+            displayData(element,'#all-countries')
         }
         catch(error){
             console.error(error)
@@ -47,7 +47,14 @@ const getAllCountries = async () =>{
 
 }
 
-// getCountryByName("Jamaica")
+const search = document.querySelector('#search-bar')
+const countrySection = document.querySelector('#country-details')
+
+search.addEventListener("input", (event)=>{
+    countrySection.innerHTML=''
+    getCountryByName(event.target.value)
+})
+
 try {
     getAllCountries()
 } catch (error) {
